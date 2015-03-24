@@ -1,0 +1,2844 @@
+structure Main :
+  sig
+    val print_prog : MipsFrame.frag list -> unit
+    val main : string -> unit list
+    val compile : string -> MipsFrame.frag list
+  end
+val it = () : unit
+
+=============================================================
+===================== Testing const_folding.tig =====================
+=============================================================
+
+************** For function f: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t106,
+    CONST 17),
+   MOVE(
+    TEMP t107,
+    BINOP(MUL,
+     CONST 9,
+     TEMP t105))),
+  ESEQ(
+   MOVE(
+    TEMP t105,
+    BINOP(PLUS,
+     TEMP t104,
+     CONST 680)),
+   CONST 17)))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing const_folding2.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t104,
+    CONST 1),
+   MOVE(
+    TEMP t105,
+    ESEQ(
+     SEQ(
+      MOVE(
+       TEMP t106,
+       CONST 2),
+      SEQ(
+       MOVE(
+        TEMP t107,
+        ESEQ(
+         MOVE(
+          TEMP t104,
+          CONST 2),
+         CONST 3)),
+       MOVE(
+        TEMP t108,
+        CONST 100))),
+     CONST 101))),
+  CONST 3))
+
+=============================================================
+===================== Testing const_folding3.tig =====================
+=============================================================
+
+************** For function f: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t105,
+    CONST 1),
+   MOVE(
+    TEMP t106,
+    CONST 2)),
+  ESEQ(
+   SEQ(
+    MOVE(
+     TEMP t106,
+     CONST 1),
+    MOVE(
+     TEMP t105,
+     TEMP t104)),
+   ESEQ(
+    MOVE(
+     TEMP t106,
+     TEMP t105),
+    CONST 0))))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing ifexp.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t104,
+    CONST 1),
+   MOVE(
+    TEMP t105,
+    CONST 2)),
+  ESEQ(
+   SEQ(
+    CJUMP(LT,
+     CONST 1,
+     CONST 2,
+     L1,L2),
+    SEQ(
+     LABEL L1,
+     SEQ(
+      MOVE(
+       TEMP t106,
+       ESEQ(
+        MOVE(
+         TEMP t104,
+         CONST 2),
+        CONST 0)),
+      SEQ(
+       JUMP(
+        NAME L3),
+       SEQ(
+        LABEL L2,
+        SEQ(
+         MOVE(
+          TEMP t106,
+          ESEQ(
+           MOVE(
+            TEMP t105,
+            CONST ~1),
+           CONST 0)),
+         LABEL L3)))))),
+   TEMP t106)))
+
+=============================================================
+===================== Testing merge.tig =====================
+=============================================================
+
+************** For function isdigit: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(GE,
+    CALL(
+     NAME ord,
+      ESEQ(
+       SEQ(
+        MOVE(
+         TEMP t107,
+         MEM(
+          TEMP t100)),
+        MOVE(
+         TEMP t107,
+         MEM(
+          TEMP t107))),
+       MEM(
+        BINOP(PLUS,
+         TEMP t107,
+         CONST ~4)))),
+    CALL(
+     NAME ord,
+      NAME L1),
+    L3,L4),
+   SEQ(
+    LABEL L3,
+    SEQ(
+     MOVE(
+      TEMP t110,
+      ESEQ(
+       SEQ(
+        MOVE(
+         TEMP t109,
+         CONST 1),
+        SEQ(
+         CJUMP(LE,
+          CALL(
+           NAME ord,
+            ESEQ(
+             SEQ(
+              MOVE(
+               TEMP t108,
+               MEM(
+                TEMP t100)),
+              MOVE(
+               TEMP t108,
+               MEM(
+                TEMP t108))),
+             MEM(
+              BINOP(PLUS,
+               TEMP t108,
+               CONST ~4)))),
+          CALL(
+           NAME ord,
+            NAME L2),
+          L6,L7),
+         SEQ(
+          LABEL L7,
+          SEQ(
+           MOVE(
+            TEMP t109,
+            CONST 0),
+           LABEL L6)))),
+       TEMP t109)),
+     SEQ(
+      JUMP(
+       NAME L5),
+      SEQ(
+       LABEL L4,
+       SEQ(
+        MOVE(
+         TEMP t110,
+         CONST 0),
+        LABEL L5)))))),
+  TEMP t110))
+************** For function skipto: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(NE,
+    ESEQ(
+     SEQ(
+      CJUMP(NE,
+       CALL(
+        NAME stringEqual,
+         ESEQ(
+          SEQ(
+           MOVE(
+            TEMP t111,
+            MEM(
+             TEMP t100)),
+           MOVE(
+            TEMP t111,
+            MEM(
+             TEMP t111))),
+          MEM(
+           BINOP(PLUS,
+            TEMP t111,
+            CONST ~4))),
+         NAME L9),
+       CONST 0,
+       L11,L12),
+      SEQ(
+       LABEL L11,
+       SEQ(
+        MOVE(
+         TEMP t113,
+         CONST 1),
+        SEQ(
+         JUMP(
+          NAME L13),
+         SEQ(
+          LABEL L12,
+          SEQ(
+           MOVE(
+            TEMP t113,
+            CALL(
+             NAME stringEqual,
+              ESEQ(
+               SEQ(
+                MOVE(
+                 TEMP t112,
+                 MEM(
+                  TEMP t100)),
+                MOVE(
+                 TEMP t112,
+                 MEM(
+                  TEMP t112))),
+               MEM(
+                BINOP(PLUS,
+                 TEMP t112,
+                 CONST ~4))),
+              NAME L10)),
+           LABEL L13)))))),
+     TEMP t113),
+    CONST 0,
+    L14,L8),
+   SEQ(
+    LABEL L14,
+    SEQ(
+     MOVE(
+      ESEQ(
+       SEQ(
+        MOVE(
+         TEMP t114,
+         MEM(
+          TEMP t100)),
+        MOVE(
+         TEMP t114,
+         MEM(
+          TEMP t114))),
+       MEM(
+        BINOP(PLUS,
+         TEMP t114,
+         CONST ~4))),
+      CALL(
+       NAME getchar)),
+     SEQ(
+      CJUMP(NE,
+       ESEQ(
+        SEQ(
+         CJUMP(NE,
+          CALL(
+           NAME stringEqual,
+            ESEQ(
+             SEQ(
+              MOVE(
+               TEMP t111,
+               MEM(
+                TEMP t100)),
+              MOVE(
+               TEMP t111,
+               MEM(
+                TEMP t111))),
+             MEM(
+              BINOP(PLUS,
+               TEMP t111,
+               CONST ~4))),
+            NAME L9),
+          CONST 0,
+          L11,L12),
+         SEQ(
+          LABEL L11,
+          SEQ(
+           MOVE(
+            TEMP t113,
+            CONST 1),
+           SEQ(
+            JUMP(
+             NAME L13),
+            SEQ(
+             LABEL L12,
+             SEQ(
+              MOVE(
+               TEMP t113,
+               CALL(
+                NAME stringEqual,
+                 ESEQ(
+                  SEQ(
+                   MOVE(
+                    TEMP t112,
+                    MEM(
+                     TEMP t100)),
+                   MOVE(
+                    TEMP t112,
+                    MEM(
+                     TEMP t112))),
+                  MEM(
+                   BINOP(PLUS,
+                    TEMP t112,
+                    CONST ~4))),
+                 NAME L10)),
+              LABEL L13)))))),
+        TEMP t113),
+       CONST 0,
+       L14,L8),
+      LABEL L8)))),
+  CONST 0))
+************** For function readint: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t105,
+   CONST 0),
+  ESEQ(
+   SEQ(
+    EXP(
+     CALL(
+      NAME skipto)),
+    SEQ(
+     MOVE(
+      MEM(
+       BINOP(PLUS,
+        TEMP t104,
+        CONST 0)),
+      CALL(
+       NAME isdigit,
+        ESEQ(
+         MOVE(
+          TEMP t115,
+          MEM(
+           TEMP t100)),
+         MEM(
+          BINOP(PLUS,
+           TEMP t115,
+           CONST ~4))))),
+     SEQ(
+      CJUMP(NE,
+       CALL(
+        NAME isdigit,
+         ESEQ(
+          MOVE(
+           TEMP t116,
+           MEM(
+            TEMP t100)),
+          MEM(
+           BINOP(PLUS,
+            TEMP t116,
+            CONST ~4)))),
+       CONST 0,
+       L17,L15),
+      SEQ(
+       LABEL L17,
+       SEQ(
+        EXP(
+         ESEQ(
+          MOVE(
+           TEMP t105,
+           BINOP(MINUS,
+            CALL(
+             NAME ord,
+              ESEQ(
+               MOVE(
+                TEMP t117,
+                MEM(
+                 TEMP t100)),
+               MEM(
+                BINOP(PLUS,
+                 TEMP t117,
+                 CONST ~4)))),
+            CALL(
+             NAME ord,
+              NAME L16))),
+          ESEQ(
+           MOVE(
+            ESEQ(
+             MOVE(
+              TEMP t118,
+              MEM(
+               TEMP t100)),
+             MEM(
+              BINOP(PLUS,
+               TEMP t118,
+               CONST ~4))),
+            CALL(
+             NAME getchar)),
+           CONST 0))),
+        SEQ(
+         CJUMP(NE,
+          CALL(
+           NAME isdigit,
+            ESEQ(
+             MOVE(
+              TEMP t116,
+              MEM(
+               TEMP t100)),
+             MEM(
+              BINOP(PLUS,
+               TEMP t116,
+               CONST ~4)))),
+          CONST 0,
+          L17,L15),
+         LABEL L15)))))),
+   TEMP t105)))
+************** For function readlist: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t119,
+    ESEQ(
+     SEQ(
+      MOVE(
+       TEMP t120,
+       CALL(
+        NAME allocRecord,
+         CONST 4)),
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t120,
+         CONST 0)),
+       CONST 0)),
+     TEMP t120)),
+   MOVE(
+    TEMP t121,
+    CALL(
+     NAME readint,
+      TEMP t119))),
+  ESEQ(
+   SEQ(
+    CJUMP(NE,
+     MEM(
+      BINOP(PLUS,
+       TEMP t119,
+       CONST 0)),
+     CONST 0,
+     L18,L19),
+    SEQ(
+     LABEL L18,
+     SEQ(
+      MOVE(
+       TEMP t123,
+       ESEQ(
+        SEQ(
+         MOVE(
+          TEMP t122,
+          CALL(
+           NAME allocRecord,
+            CONST 8)),
+         SEQ(
+          MOVE(
+           MEM(
+            BINOP(PLUS,
+             TEMP t122,
+             CONST 0)),
+           TEMP t121),
+          MOVE(
+           MEM(
+            BINOP(PLUS,
+             TEMP t122,
+             CONST 4)),
+           CALL(
+            NAME readlist)))),
+        TEMP t122)),
+      SEQ(
+       JUMP(
+        NAME L20),
+       SEQ(
+        LABEL L19,
+        SEQ(
+         MOVE(
+          TEMP t123,
+          CONST 0),
+         LABEL L20)))))),
+   TEMP t123)))
+************** For function merge: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(EQ,
+    TEMP t124,
+    CONST 0,
+    L27,L28),
+   SEQ(
+    LABEL L27,
+    SEQ(
+     MOVE(
+      TEMP t130,
+      TEMP t125),
+     SEQ(
+      JUMP(
+       NAME L29),
+      SEQ(
+       LABEL L28,
+       SEQ(
+        MOVE(
+         TEMP t130,
+         ESEQ(
+          SEQ(
+           CJUMP(EQ,
+            TEMP t125,
+            CONST 0,
+            L24,L25),
+           SEQ(
+            LABEL L24,
+            SEQ(
+             MOVE(
+              TEMP t129,
+              TEMP t124),
+             SEQ(
+              JUMP(
+               NAME L26),
+              SEQ(
+               LABEL L25,
+               SEQ(
+                MOVE(
+                 TEMP t129,
+                 ESEQ(
+                  SEQ(
+                   CJUMP(LT,
+                    MEM(
+                     BINOP(PLUS,
+                      TEMP t124,
+                      CONST 0)),
+                    MEM(
+                     BINOP(PLUS,
+                      TEMP t125,
+                      CONST 0)),
+                    L21,L22),
+                   SEQ(
+                    LABEL L21,
+                    SEQ(
+                     MOVE(
+                      TEMP t128,
+                      ESEQ(
+                       SEQ(
+                        MOVE(
+                         TEMP t126,
+                         CALL(
+                          NAME allocRecord,
+                           CONST 8)),
+                        SEQ(
+                         MOVE(
+                          MEM(
+                           BINOP(PLUS,
+                            TEMP t126,
+                            CONST 0)),
+                          MEM(
+                           BINOP(PLUS,
+                            TEMP t124,
+                            CONST 0))),
+                         MOVE(
+                          MEM(
+                           BINOP(PLUS,
+                            TEMP t126,
+                            CONST 4)),
+                          CALL(
+                           NAME merge,
+                            MEM(
+                             BINOP(PLUS,
+                              TEMP t124,
+                              CONST 4)),
+                            TEMP t125)))),
+                       TEMP t126)),
+                     SEQ(
+                      JUMP(
+                       NAME L23),
+                      SEQ(
+                       LABEL L22,
+                       SEQ(
+                        MOVE(
+                         TEMP t128,
+                         ESEQ(
+                          SEQ(
+                           MOVE(
+                            TEMP t127,
+                            CALL(
+                             NAME allocRecord,
+                              CONST 8)),
+                           SEQ(
+                            MOVE(
+                             MEM(
+                              BINOP(PLUS,
+                               TEMP t127,
+                               CONST 0)),
+                             MEM(
+                              BINOP(PLUS,
+                               TEMP t125,
+                               CONST 0))),
+                            MOVE(
+                             MEM(
+                              BINOP(PLUS,
+                               TEMP t127,
+                               CONST 4)),
+                             CALL(
+                              NAME merge,
+                               TEMP t124,
+                               MEM(
+                                BINOP(PLUS,
+                                 TEMP t125,
+                                 CONST 4)))))),
+                          TEMP t127)),
+                        LABEL L23)))))),
+                  TEMP t128)),
+                LABEL L26)))))),
+          TEMP t129)),
+        LABEL L29)))))),
+  TEMP t130))
+************** For function f: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(GT,
+    TEMP t132,
+    CONST 0,
+    L31,L32),
+   SEQ(
+    LABEL L31,
+    SEQ(
+     MOVE(
+      TEMP t133,
+      ESEQ(
+       EXP(
+        CALL(
+         NAME f,
+          BINOP(DIV,
+           TEMP t132,
+           CONST 10))),
+       CALL(
+        NAME print,
+         CALL(
+          NAME chr,
+           BINOP(PLUS,
+            BINOP(MINUS,
+             TEMP t132,
+             BINOP(MUL,
+              BINOP(DIV,
+               TEMP t132,
+               CONST 10),
+              CONST 10)),
+            CALL(
+             NAME ord,
+              NAME L30)))))),
+     SEQ(
+      JUMP(
+       NAME L33),
+      SEQ(
+       LABEL L32,
+       SEQ(
+        MOVE(
+         TEMP t133,
+         CONST 0),
+        LABEL L33)))))),
+  TEMP t133))
+************** For function printint: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(LT,
+    TEMP t131,
+    CONST 0,
+    L39,L40),
+   SEQ(
+    LABEL L39,
+    SEQ(
+     MOVE(
+      TEMP t135,
+      ESEQ(
+       EXP(
+        CALL(
+         NAME print,
+          NAME L34)),
+       CALL(
+        NAME f,
+         BINOP(MINUS,
+          CONST 0,
+          TEMP t131)))),
+     SEQ(
+      JUMP(
+       NAME L41),
+      SEQ(
+       LABEL L40,
+       SEQ(
+        MOVE(
+         TEMP t135,
+         ESEQ(
+          SEQ(
+           CJUMP(GT,
+            TEMP t131,
+            CONST 0,
+            L36,L37),
+           SEQ(
+            LABEL L36,
+            SEQ(
+             MOVE(
+              TEMP t134,
+              CALL(
+               NAME f,
+                TEMP t131)),
+             SEQ(
+              JUMP(
+               NAME L38),
+              SEQ(
+               LABEL L37,
+               SEQ(
+                MOVE(
+                 TEMP t134,
+                 CALL(
+                  NAME print,
+                   NAME L35)),
+                LABEL L38)))))),
+          TEMP t134)),
+        LABEL L41)))))),
+  TEMP t135))
+************** For function printlist: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(EQ,
+    TEMP t136,
+    CONST 0,
+    L44,L45),
+   SEQ(
+    LABEL L44,
+    SEQ(
+     MOVE(
+      TEMP t137,
+      CALL(
+       NAME print,
+        NAME L42)),
+     SEQ(
+      JUMP(
+       NAME L46),
+      SEQ(
+       LABEL L45,
+       SEQ(
+        MOVE(
+         TEMP t137,
+         ESEQ(
+          SEQ(
+           EXP(
+            CALL(
+             NAME printint,
+              MEM(
+               BINOP(PLUS,
+                TEMP t136,
+                CONST 0)))),
+           EXP(
+            CALL(
+             NAME print,
+              NAME L43))),
+          CALL(
+           NAME printlist,
+            MEM(
+             BINOP(PLUS,
+              TEMP t136,
+              CONST 4))))),
+        LABEL L46)))))),
+  TEMP t137))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    MEM(
+     BINOP(PLUS,
+      TEMP t100,
+      CONST ~4)),
+    CALL(
+     NAME getchar)),
+   SEQ(
+    MOVE(
+     TEMP t138,
+     CALL(
+      NAME readlist)),
+    MOVE(
+     TEMP t139,
+     ESEQ(
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t100,
+         CONST ~4)),
+       CALL(
+        NAME getchar)),
+      CALL(
+       NAME readlist))))),
+  CALL(
+   NAME printlist,
+    CALL(
+     NAME merge,
+      TEMP t138,
+      TEMP t139))))
+
+=============================================================
+===================== Testing queens.tig =====================
+=============================================================
+
+************** For function printboard: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t108,
+    CONST 0),
+   SEQ(
+    CJUMP(LE,
+     TEMP t108,
+     CONST 7,
+     L12,L1),
+    SEQ(
+     LABEL L11,
+     SEQ(
+      EXP(
+       BINOP(PLUS,
+        TEMP t108,
+        CONST 1)),
+      SEQ(
+       LABEL L12,
+       SEQ(
+        EXP(
+         ESEQ(
+          SEQ(
+           MOVE(
+            TEMP t110,
+            CONST 0),
+           SEQ(
+            CJUMP(LE,
+             TEMP t110,
+             CONST 7,
+             L9,L2),
+            SEQ(
+             LABEL L8,
+             SEQ(
+              EXP(
+               BINOP(PLUS,
+                TEMP t110,
+                CONST 1)),
+              SEQ(
+               LABEL L9,
+               SEQ(
+                EXP(
+                 CALL(
+                  NAME print,
+                   ESEQ(
+                    SEQ(
+                     CJUMP(EQ,
+                      MEM(
+                       BINOP(PLUS,
+                        ESEQ(
+                         MOVE(
+                          TEMP t112,
+                          MEM(
+                           TEMP t100)),
+                         MEM(
+                          BINOP(PLUS,
+                           TEMP t112,
+                           CONST ~12))),
+                        BINOP(MUL,
+                         TEMP t108,
+                         CONST 4))),
+                      TEMP t110,
+                      L5,L6),
+                     SEQ(
+                      LABEL L5,
+                      SEQ(
+                       MOVE(
+                        TEMP t113,
+                        NAME L3),
+                       SEQ(
+                        JUMP(
+                         NAME L7),
+                        SEQ(
+                         LABEL L6,
+                         SEQ(
+                          MOVE(
+                           TEMP t113,
+                           NAME L4),
+                          LABEL L7)))))),
+                    TEMP t113))),
+                SEQ(
+                 CJUMP(LT,
+                  TEMP t110,
+                  CONST 7,
+                  L8,L2),
+                 LABEL L2))))))),
+          CALL(
+           NAME print,
+            NAME L10))),
+        SEQ(
+         CJUMP(LT,
+          TEMP t108,
+          CONST 7,
+          L11,L1),
+         LABEL L1))))))),
+  CALL(
+   NAME print,
+    NAME L13)))
+************** For function try: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(EQ,
+    TEMP t114,
+    CONST 8,
+    L30,L31),
+   SEQ(
+    LABEL L30,
+    SEQ(
+     MOVE(
+      TEMP t133,
+      CALL(
+       NAME printboard)),
+     SEQ(
+      JUMP(
+       NAME L32),
+      SEQ(
+       LABEL L31,
+       SEQ(
+        MOVE(
+         TEMP t133,
+         ESEQ(
+          SEQ(
+           MOVE(
+            TEMP t116,
+            CONST 0),
+           SEQ(
+            CJUMP(LE,
+             TEMP t116,
+             CONST 7,
+             L29,L14),
+            SEQ(
+             LABEL L28,
+             SEQ(
+              EXP(
+               BINOP(PLUS,
+                TEMP t116,
+                CONST 1)),
+              SEQ(
+               LABEL L29,
+               SEQ(
+                EXP(
+                 ESEQ(
+                  SEQ(
+                   CJUMP(NE,
+                    ESEQ(
+                     SEQ(
+                      CJUMP(NE,
+                       ESEQ(
+                        SEQ(
+                         CJUMP(EQ,
+                          MEM(
+                           BINOP(PLUS,
+                            ESEQ(
+                             MOVE(
+                              TEMP t118,
+                              MEM(
+                               TEMP t100)),
+                             MEM(
+                              BINOP(PLUS,
+                               TEMP t118,
+                               CONST ~8))),
+                            BINOP(MUL,
+                             TEMP t116,
+                             CONST 4))),
+                          CONST 0,
+                          L15,L16),
+                         SEQ(
+                          LABEL L15,
+                          SEQ(
+                           MOVE(
+                            TEMP t121,
+                            ESEQ(
+                             SEQ(
+                              MOVE(
+                               TEMP t120,
+                               CONST 1),
+                              SEQ(
+                               CJUMP(EQ,
+                                MEM(
+                                 BINOP(PLUS,
+                                  ESEQ(
+                                   MOVE(
+                                    TEMP t119,
+                                    MEM(
+                                     TEMP t100)),
+                                   MEM(
+                                    BINOP(PLUS,
+                                     TEMP t119,
+                                     CONST ~16))),
+                                  BINOP(MUL,
+                                   BINOP(PLUS,
+                                    TEMP t116,
+                                    TEMP t114),
+                                   CONST 4))),
+                                CONST 0,
+                                L18,L19),
+                               SEQ(
+                                LABEL L19,
+                                SEQ(
+                                 MOVE(
+                                  TEMP t120,
+                                  CONST 0),
+                                 LABEL L18)))),
+                             TEMP t120)),
+                           SEQ(
+                            JUMP(
+                             NAME L17),
+                            SEQ(
+                             LABEL L16,
+                             SEQ(
+                              MOVE(
+                               TEMP t121,
+                               CONST 0),
+                              LABEL L17)))))),
+                        TEMP t121),
+                       CONST 0,
+                       L20,L21),
+                      SEQ(
+                       LABEL L20,
+                       SEQ(
+                        MOVE(
+                         TEMP t124,
+                         ESEQ(
+                          SEQ(
+                           MOVE(
+                            TEMP t123,
+                            CONST 1),
+                           SEQ(
+                            CJUMP(EQ,
+                             MEM(
+                              BINOP(PLUS,
+                               ESEQ(
+                                MOVE(
+                                 TEMP t122,
+                                 MEM(
+                                  TEMP t100)),
+                                MEM(
+                                 BINOP(PLUS,
+                                  TEMP t122,
+                                  CONST ~20))),
+                               BINOP(MUL,
+                                BINOP(MINUS,
+                                 BINOP(PLUS,
+                                  TEMP t116,
+                                  CONST 7),
+                                 TEMP t114),
+                                CONST 4))),
+                             CONST 0,
+                             L23,L24),
+                            SEQ(
+                             LABEL L24,
+                             SEQ(
+                              MOVE(
+                               TEMP t123,
+                               CONST 0),
+                              LABEL L23)))),
+                          TEMP t123)),
+                        SEQ(
+                         JUMP(
+                          NAME L22),
+                         SEQ(
+                          LABEL L21,
+                          SEQ(
+                           MOVE(
+                            TEMP t124,
+                            CONST 0),
+                           LABEL L22)))))),
+                     TEMP t124),
+                    CONST 0,
+                    L25,L26),
+                   SEQ(
+                    LABEL L25,
+                    SEQ(
+                     MOVE(
+                      TEMP t132,
+                      ESEQ(
+                       SEQ(
+                        MOVE(
+                         MEM(
+                          BINOP(PLUS,
+                           ESEQ(
+                            MOVE(
+                             TEMP t125,
+                             MEM(
+                              TEMP t100)),
+                            MEM(
+                             BINOP(PLUS,
+                              TEMP t125,
+                              CONST ~8))),
+                           BINOP(MUL,
+                            TEMP t116,
+                            CONST 4))),
+                         CONST 1),
+                        SEQ(
+                         MOVE(
+                          MEM(
+                           BINOP(PLUS,
+                            ESEQ(
+                             MOVE(
+                              TEMP t126,
+                              MEM(
+                               TEMP t100)),
+                             MEM(
+                              BINOP(PLUS,
+                               TEMP t126,
+                               CONST ~16))),
+                            BINOP(MUL,
+                             BINOP(PLUS,
+                              TEMP t116,
+                              TEMP t114),
+                             CONST 4))),
+                          CONST 1),
+                         SEQ(
+                          MOVE(
+                           MEM(
+                            BINOP(PLUS,
+                             ESEQ(
+                              MOVE(
+                               TEMP t127,
+                               MEM(
+                                TEMP t100)),
+                              MEM(
+                               BINOP(PLUS,
+                                TEMP t127,
+                                CONST ~20))),
+                             BINOP(MUL,
+                              BINOP(MINUS,
+                               BINOP(PLUS,
+                                TEMP t116,
+                                CONST 7),
+                               TEMP t114),
+                              CONST 4))),
+                           CONST 1),
+                          SEQ(
+                           MOVE(
+                            MEM(
+                             BINOP(PLUS,
+                              ESEQ(
+                               MOVE(
+                                TEMP t128,
+                                MEM(
+                                 TEMP t100)),
+                               MEM(
+                                BINOP(PLUS,
+                                 TEMP t128,
+                                 CONST ~12))),
+                              BINOP(MUL,
+                               TEMP t114,
+                               CONST 4))),
+                            TEMP t116),
+                           SEQ(
+                            EXP(
+                             CALL(
+                              NAME try,
+                               BINOP(PLUS,
+                                TEMP t114,
+                                CONST 1))),
+                            SEQ(
+                             MOVE(
+                              MEM(
+                               BINOP(PLUS,
+                                ESEQ(
+                                 MOVE(
+                                  TEMP t129,
+                                  MEM(
+                                   TEMP t100)),
+                                 MEM(
+                                  BINOP(PLUS,
+                                   TEMP t129,
+                                   CONST ~8))),
+                                BINOP(MUL,
+                                 TEMP t116,
+                                 CONST 4))),
+                              CONST 0),
+                             MOVE(
+                              MEM(
+                               BINOP(PLUS,
+                                ESEQ(
+                                 MOVE(
+                                  TEMP t130,
+                                  MEM(
+                                   TEMP t100)),
+                                 MEM(
+                                  BINOP(PLUS,
+                                   TEMP t130,
+                                   CONST ~16))),
+                                BINOP(MUL,
+                                 BINOP(PLUS,
+                                  TEMP t116,
+                                  TEMP t114),
+                                 CONST 4))),
+                              CONST 0))))))),
+                       ESEQ(
+                        MOVE(
+                         MEM(
+                          BINOP(PLUS,
+                           ESEQ(
+                            MOVE(
+                             TEMP t131,
+                             MEM(
+                              TEMP t100)),
+                            MEM(
+                             BINOP(PLUS,
+                              TEMP t131,
+                              CONST ~20))),
+                           BINOP(MUL,
+                            BINOP(MINUS,
+                             BINOP(PLUS,
+                              TEMP t116,
+                              CONST 7),
+                             TEMP t114),
+                            CONST 4))),
+                         CONST 0),
+                        CONST 0))),
+                     SEQ(
+                      JUMP(
+                       NAME L27),
+                      SEQ(
+                       LABEL L26,
+                       SEQ(
+                        MOVE(
+                         TEMP t132,
+                         CONST 0),
+                        LABEL L27)))))),
+                  TEMP t132)),
+                SEQ(
+                 CJUMP(LT,
+                  TEMP t116,
+                  CONST 7,
+                  L28,L14),
+                 LABEL L14))))))),
+          CONST 0)),
+        LABEL L32)))))),
+  TEMP t133))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    MEM(
+     BINOP(PLUS,
+      TEMP t100,
+      CONST ~4)),
+    CONST 8),
+   SEQ(
+    MOVE(
+     MEM(
+      BINOP(PLUS,
+       TEMP t100,
+       CONST ~8)),
+     ESEQ(
+      SEQ(
+       MOVE(
+        TEMP t104,
+        CALL(
+         NAME initArray,
+          CONST 9,
+          CONST 0)),
+       SEQ(
+        MOVE(
+         MEM(
+          TEMP t104),
+         CONST 8),
+        MOVE(
+         TEMP t104,
+         BINOP(PLUS,
+          TEMP t104,
+          CONST 4)))),
+      TEMP t104)),
+    SEQ(
+     MOVE(
+      MEM(
+       BINOP(PLUS,
+        TEMP t100,
+        CONST ~12)),
+      ESEQ(
+       SEQ(
+        MOVE(
+         TEMP t105,
+         CALL(
+          NAME initArray,
+           CONST 9,
+           CONST 0)),
+        SEQ(
+         MOVE(
+          MEM(
+           TEMP t105),
+          CONST 8),
+         MOVE(
+          TEMP t105,
+          BINOP(PLUS,
+           TEMP t105,
+           CONST 4)))),
+       TEMP t105)),
+     SEQ(
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t100,
+         CONST ~16)),
+       ESEQ(
+        SEQ(
+         MOVE(
+          TEMP t106,
+          CALL(
+           NAME initArray,
+            CONST 16,
+            CONST 0)),
+         SEQ(
+          MOVE(
+           MEM(
+            TEMP t106),
+           CONST 15),
+          MOVE(
+           TEMP t106,
+           BINOP(PLUS,
+            TEMP t106,
+            CONST 4)))),
+        TEMP t106)),
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t100,
+         CONST ~20)),
+       ESEQ(
+        SEQ(
+         MOVE(
+          TEMP t107,
+          CALL(
+           NAME initArray,
+            CONST 16,
+            CONST 0)),
+         SEQ(
+          MOVE(
+           MEM(
+            TEMP t107),
+           CONST 15),
+          MOVE(
+           TEMP t107,
+           BINOP(PLUS,
+            TEMP t107,
+            CONST 4)))),
+        TEMP t107)))))),
+  CALL(
+   NAME try,
+    CONST 0)))
+
+=============================================================
+===================== Testing test1.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CALL(
+       NAME initArray,
+        CONST 11,
+        CONST 0)),
+     SEQ(
+      MOVE(
+       MEM(
+        TEMP t105),
+       CONST 10),
+      MOVE(
+       TEMP t105,
+       BINOP(PLUS,
+        TEMP t105,
+        CONST 4)))),
+    TEMP t105)),
+  TEMP t104))
+
+=============================================================
+===================== Testing test10.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test10.tig:2.1 Error: while exp1 do exp2: type of exp2 should be no value
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test11.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test11.tig:2.1 Error: for var:= exp1 to exp2 do exp3: type of exp1 and exp2 should be int
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test12.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t104,
+    CONST 0),
+   SEQ(
+    MOVE(
+     TEMP t105,
+     CONST 0),
+    SEQ(
+     CJUMP(LE,
+      TEMP t105,
+      CONST 100,
+      L3,L1),
+     SEQ(
+      LABEL L2,
+      SEQ(
+       EXP(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 1)),
+       SEQ(
+        LABEL L3,
+        SEQ(
+         EXP(
+          ESEQ(
+           MOVE(
+            TEMP t104,
+            CONST 1),
+           CONST 0)),
+         SEQ(
+          CJUMP(LT,
+           TEMP t105,
+           CONST 100,
+           L2,L1),
+          LABEL L1)))))))),
+  CONST 0))
+
+=============================================================
+===================== Testing test13.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test13.tig:3.1 Error: types mismatch for arithmetic and comparison expression
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test14.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test14.tig:12.5 Error: types mismatch for arithmetic and comparison expression
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test14.tig:12.2 Error: if exp1 then exp2 else exp3: type of exp1 is not int
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t104,
+    ESEQ(
+     SEQ(
+      MOVE(
+       TEMP t105,
+       CALL(
+        NAME allocRecord,
+         CONST 8)),
+      SEQ(
+       MOVE(
+        MEM(
+         BINOP(PLUS,
+          TEMP t105,
+          CONST 0)),
+        NAME L1),
+       MOVE(
+        MEM(
+         BINOP(PLUS,
+          TEMP t105,
+          CONST 4)),
+        CONST 0))),
+     TEMP t105)),
+   MOVE(
+    TEMP t106,
+    ESEQ(
+     SEQ(
+      MOVE(
+       TEMP t107,
+       CALL(
+        NAME initArray,
+         CONST 4,
+         CONST 0)),
+      SEQ(
+       MOVE(
+        MEM(
+         TEMP t107),
+        CONST 3),
+       MOVE(
+        TEMP t107,
+        BINOP(PLUS,
+         TEMP t107,
+         CONST 4)))),
+     TEMP t107))),
+  CONST 0))
+
+=============================================================
+===================== Testing test15.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test15.tig:3.1 Error: the return type of then expession in if-then expression is not unit
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(NE,
+    CONST 20,
+    CONST 0,
+    L1,L2),
+   SEQ(
+    LABEL L1,
+    SEQ(
+     MOVE(
+      TEMP t104,
+      CONST 3),
+     SEQ(
+      JUMP(
+       NAME L3),
+      SEQ(
+       LABEL L2,
+       SEQ(
+        MOVE(
+         TEMP t104,
+         CONST 0),
+        LABEL L3)))))),
+  TEMP t104))
+
+=============================================================
+===================== Testing test16.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test16.tig:4.1 Error: illegal recursive types definition
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test16.tig:5.1 Error: illegal recursive types definition
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test16.tig:6.1 Error: illegal recursive types definition
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test16.tig:7.1 Error: illegal recursive types definition
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ NAME L1)
+
+=============================================================
+===================== Testing test17.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test17.tig:4.23 Error: treelist undefined type
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  CONST 0))
+
+=============================================================
+===================== Testing test18.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test18.tig:5.4 Error: do_nothing2 is undefined.
+************** For function do_nothing1: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  EXP(
+   CONST 0),
+  CONST 0))
+************** For function do_nothing2: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  EXP(
+   CALL(
+    NAME do_nothing1,
+     TEMP t107,
+     NAME L1)),
+  NAME L2))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t106,
+   CONST 0),
+  CALL(
+   NAME do_nothing1,
+    CONST 0,
+    NAME L3)))
+
+=============================================================
+===================== Testing test19.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test19.tig:8.16 Error: undefined variable : a
+************** For function do_nothing1: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  EXP(
+   CALL(
+    NAME do_nothing2,
+     BINOP(PLUS,
+      TEMP t104,
+      CONST 1))),
+  CONST 0))
+************** For function do_nothing2: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  EXP(
+   CALL(
+    NAME do_nothing1,
+     CONST 0,
+     NAME L1)),
+  NAME L2))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME do_nothing1,
+   CONST 0,
+   NAME L3))
+
+=============================================================
+===================== Testing test2.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CALL(
+       NAME initArray,
+        CONST 11,
+        CONST 0)),
+     SEQ(
+      MOVE(
+       MEM(
+        TEMP t105),
+       CONST 10),
+      MOVE(
+       TEMP t105,
+       BINOP(PLUS,
+        TEMP t105,
+        CONST 4)))),
+    TEMP t105)),
+  TEMP t104))
+
+=============================================================
+===================== Testing test20.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test20.tig:3.18 Error: undefined variable : i
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test20.tig:3.18 Error: types mismatch for arithmetic and comparison expression
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(GT,
+    CONST 10,
+    CONST 5,
+    L2,L1),
+   SEQ(
+    LABEL L2,
+    SEQ(
+     EXP(
+      ESEQ(
+       EXP(
+        CONST 0),
+       CONST 0)),
+     SEQ(
+      CJUMP(GT,
+       CONST 10,
+       CONST 5,
+       L2,L1),
+      LABEL L1)))),
+  CONST 0))
+
+=============================================================
+===================== Testing test21.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test21.tig:8.9 Error: types mismatch for arithmetic and comparison expression
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test21.tig:5.10 Error: In function nfactor, function return type and body type do not match
+************** For function nfactor: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(EQ,
+    TEMP t104,
+    CONST 0,
+    L1,L2),
+   SEQ(
+    LABEL L1,
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CONST 1),
+     SEQ(
+      JUMP(
+       NAME L3),
+      SEQ(
+       LABEL L2,
+       SEQ(
+        MOVE(
+         TEMP t105,
+         CONST 0),
+        LABEL L3)))))),
+  TEMP t105))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME nfactor,
+   CONST 10))
+
+=============================================================
+===================== Testing test22.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test22.tig:7.2 Error: record does not have field nam
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test22.tig:7.2 Error: types do not match
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t104,
+    ESEQ(
+     SEQ(
+      MOVE(
+       TEMP t105,
+       CALL(
+        NAME allocRecord,
+         CONST 8)),
+      SEQ(
+       MOVE(
+        MEM(
+         BINOP(PLUS,
+          TEMP t105,
+          CONST 0)),
+        NAME L1),
+       MOVE(
+        MEM(
+         BINOP(PLUS,
+          TEMP t105,
+          CONST 4)),
+        CONST 0))),
+     TEMP t105)),
+   MOVE(
+    CONST 0,
+    NAME L2)),
+  CONST 0))
+
+=============================================================
+===================== Testing test23.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test23.tig:7.2 Error: types do not match
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test23.tig:8.2 Error: types do not match
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CALL(
+       NAME allocRecord,
+        CONST 8)),
+     SEQ(
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 0)),
+       NAME L1),
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 4)),
+       CONST 0))),
+    TEMP t105)),
+  ESEQ(
+   MOVE(
+    MEM(
+     BINOP(PLUS,
+      TEMP t104,
+      CONST 0)),
+    CONST 3),
+   ESEQ(
+    MOVE(
+     MEM(
+      BINOP(PLUS,
+       TEMP t104,
+       CONST 4)),
+     NAME L2),
+    CONST 0))))
+
+=============================================================
+===================== Testing test24.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test24.tig:5.2 Error: can not perform subscript operation on none array type
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  CONST 0))
+
+=============================================================
+===================== Testing test25.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test25.tig:5.2 Error: can not perform filed operation on none record type with field = f
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  CONST 0))
+
+=============================================================
+===================== Testing test26.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test26.tig:3.1 Error: types mismatch for arithmetic and comparison expression
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test27.tig =====================
+=============================================================
+
+************** For function f: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+************** For function g: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   MEM(
+    BINOP(PLUS,
+     TEMP t100,
+     CONST ~4)),
+   CONST 0),
+  ESEQ(
+   EXP(
+    CALL(
+     NAME g,
+      CONST 2,
+      CONST 3)),
+   CONST 0)))
+
+=============================================================
+===================== Testing test28.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test28.tig:7.2 Error: the type of initializaion expression does not match the type of variable rec1
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CALL(
+       NAME allocRecord,
+        CONST 8)),
+     SEQ(
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 0)),
+       NAME L1),
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 4)),
+       CONST 0))),
+    TEMP t105)),
+  TEMP t104))
+
+=============================================================
+===================== Testing test29.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test29.tig:7.2 Error: the type of initializaion expression does not match the type of variable arr1
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CALL(
+       NAME initArray,
+        CONST 11,
+        CONST 0)),
+     SEQ(
+      MOVE(
+       MEM(
+        TEMP t105),
+       CONST 10),
+      MOVE(
+       TEMP t105,
+       BINOP(PLUS,
+        TEMP t105,
+        CONST 4)))),
+    TEMP t105)),
+  TEMP t104))
+
+=============================================================
+===================== Testing test3.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CALL(
+       NAME allocRecord,
+        CONST 8)),
+     SEQ(
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 0)),
+       NAME L1),
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 4)),
+       CONST 1000))),
+    TEMP t105)),
+  ESEQ(
+   MOVE(
+    MEM(
+     BINOP(PLUS,
+      TEMP t104,
+      CONST 0)),
+    NAME L2),
+   TEMP t104)))
+
+=============================================================
+===================== Testing test30.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CALL(
+       NAME initArray,
+        CONST 11,
+        CONST 0)),
+     SEQ(
+      MOVE(
+       MEM(
+        TEMP t105),
+       CONST 10),
+      MOVE(
+       TEMP t105,
+       BINOP(PLUS,
+        TEMP t105,
+        CONST 4)))),
+    TEMP t105)),
+  MEM(
+   BINOP(PLUS,
+    TEMP t104,
+    CONST 8))))
+
+=============================================================
+===================== Testing test31.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test31.tig:3.2 Error: the type of initializaion expression does not match the type of variable a
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   NAME L1),
+  TEMP t104))
+
+=============================================================
+===================== Testing test32.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test32.tig:6.11 Error: arrayty [exp1] of exp2: type of exp2 should be subtype of element type of the array
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  CONST 0))
+
+=============================================================
+===================== Testing test33.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test33.tig:3.10 Error: Undifined record type rectype
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  CONST 0))
+
+=============================================================
+===================== Testing test34.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test34.tig:5.2 Error: types do not match
+************** For function g: **************
+MOVE(
+ TEMP t102,
+ TEMP t104)
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME g,
+   NAME L1,
+   NAME L2))
+
+=============================================================
+===================== Testing test35.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test35.tig:5.2 Error: Number of arguments does not match for function g
+************** For function g: **************
+MOVE(
+ TEMP t102,
+ TEMP t104)
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test36.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test36.tig:5.2 Error: Number of arguments does not match for function g
+************** For function g: **************
+MOVE(
+ TEMP t102,
+ TEMP t104)
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test37.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t104,
+    CONST 0),
+   MOVE(
+    TEMP t105,
+    NAME L1)),
+  TEMP t105))
+
+=============================================================
+===================== Testing test38.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test38.tig:5.2 Error: duplicate record field a definition
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test39.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test39.tig:5.11 Error: duplicate function g definition
+************** For function g: **************
+MOVE(
+ TEMP t102,
+ TEMP t104)
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test4.tig =====================
+=============================================================
+
+************** For function nfactor: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(EQ,
+    TEMP t104,
+    CONST 0,
+    L1,L2),
+   SEQ(
+    LABEL L1,
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CONST 1),
+     SEQ(
+      JUMP(
+       NAME L3),
+      SEQ(
+       LABEL L2,
+       SEQ(
+        MOVE(
+         TEMP t105,
+         BINOP(MUL,
+          TEMP t104,
+          CALL(
+           NAME nfactor,
+            BINOP(MINUS,
+             TEMP t104,
+             CONST 1)))),
+        LABEL L3)))))),
+  TEMP t105))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME nfactor,
+   CONST 10))
+
+=============================================================
+===================== Testing test40.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test40.tig:3.11 Error: In function g, function return type and body type do not match
+************** For function g: **************
+MOVE(
+ TEMP t102,
+ TEMP t104)
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME g,
+   CONST 2))
+
+=============================================================
+===================== Testing test41.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test42.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t104,
+    ESEQ(
+     SEQ(
+      MOVE(
+       TEMP t105,
+       CALL(
+        NAME initArray,
+         CONST 11,
+         CONST 0)),
+      SEQ(
+       MOVE(
+        MEM(
+         TEMP t105),
+        CONST 10),
+       MOVE(
+        TEMP t105,
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 4)))),
+     TEMP t105)),
+   SEQ(
+    MOVE(
+     TEMP t106,
+     ESEQ(
+      SEQ(
+       MOVE(
+        TEMP t108,
+        CALL(
+         NAME initArray,
+          CONST 6,
+          ESEQ(
+           SEQ(
+            MOVE(
+             TEMP t107,
+             CALL(
+              NAME allocRecord,
+               CONST 16)),
+            SEQ(
+             MOVE(
+              MEM(
+               BINOP(PLUS,
+                TEMP t107,
+                CONST 0)),
+              NAME L1),
+             SEQ(
+              MOVE(
+               MEM(
+                BINOP(PLUS,
+                 TEMP t107,
+                 CONST 4)),
+               NAME L2),
+              SEQ(
+               MOVE(
+                MEM(
+                 BINOP(PLUS,
+                  TEMP t107,
+                  CONST 8)),
+                CONST 0),
+               MOVE(
+                MEM(
+                 BINOP(PLUS,
+                  TEMP t107,
+                  CONST 12)),
+                CONST 0))))),
+           TEMP t107))),
+       SEQ(
+        MOVE(
+         MEM(
+          TEMP t108),
+         CONST 5),
+        MOVE(
+         TEMP t108,
+         BINOP(PLUS,
+          TEMP t108,
+          CONST 4)))),
+      TEMP t108)),
+    SEQ(
+     MOVE(
+      TEMP t109,
+      ESEQ(
+       SEQ(
+        MOVE(
+         TEMP t110,
+         CALL(
+          NAME initArray,
+           CONST 101,
+           NAME L3)),
+        SEQ(
+         MOVE(
+          MEM(
+           TEMP t110),
+          CONST 100),
+         MOVE(
+          TEMP t110,
+          BINOP(PLUS,
+           TEMP t110,
+           CONST 4)))),
+       TEMP t110)),
+     SEQ(
+      MOVE(
+       TEMP t111,
+       ESEQ(
+        SEQ(
+         MOVE(
+          TEMP t112,
+          CALL(
+           NAME allocRecord,
+            CONST 16)),
+         SEQ(
+          MOVE(
+           MEM(
+            BINOP(PLUS,
+             TEMP t112,
+             CONST 0)),
+           NAME L4),
+          SEQ(
+           MOVE(
+            MEM(
+             BINOP(PLUS,
+              TEMP t112,
+              CONST 4)),
+            NAME L5),
+           SEQ(
+            MOVE(
+             MEM(
+              BINOP(PLUS,
+               TEMP t112,
+               CONST 8)),
+             CONST 2432),
+            MOVE(
+             MEM(
+              BINOP(PLUS,
+               TEMP t112,
+               CONST 12)),
+             CONST 44))))),
+        TEMP t112)),
+      MOVE(
+       TEMP t113,
+       ESEQ(
+        SEQ(
+         MOVE(
+          TEMP t115,
+          CALL(
+           NAME allocRecord,
+            CONST 8)),
+         SEQ(
+          MOVE(
+           MEM(
+            BINOP(PLUS,
+             TEMP t115,
+             CONST 0)),
+           NAME L6),
+          MOVE(
+           MEM(
+            BINOP(PLUS,
+             TEMP t115,
+             CONST 4)),
+           ESEQ(
+            SEQ(
+             MOVE(
+              TEMP t114,
+              CALL(
+               NAME initArray,
+                CONST 4,
+                CONST 1900)),
+             SEQ(
+              MOVE(
+               MEM(
+                TEMP t114),
+               CONST 3),
+              MOVE(
+               TEMP t114,
+               BINOP(PLUS,
+                TEMP t114,
+                CONST 4)))),
+            TEMP t114)))),
+        TEMP t115)))))),
+  ESEQ(
+   SEQ(
+    MOVE(
+     MEM(
+      BINOP(PLUS,
+       TEMP t104,
+       CONST 0)),
+     CONST 1),
+    SEQ(
+     MOVE(
+      MEM(
+       BINOP(PLUS,
+        TEMP t104,
+        CONST 36)),
+      CONST 3),
+     SEQ(
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         MEM(
+          BINOP(PLUS,
+           TEMP t106,
+           CONST 12)),
+         CONST 0)),
+       NAME L7),
+      SEQ(
+       MOVE(
+        MEM(
+         BINOP(PLUS,
+          MEM(
+           BINOP(PLUS,
+            TEMP t106,
+            CONST 4)),
+          CONST 12)),
+        CONST 23),
+       SEQ(
+        MOVE(
+         MEM(
+          BINOP(PLUS,
+           TEMP t109,
+           CONST 136)),
+         NAME L8),
+        SEQ(
+         MOVE(
+          MEM(
+           BINOP(PLUS,
+            TEMP t111,
+            CONST 0)),
+          NAME L9),
+         MOVE(
+          MEM(
+           BINOP(PLUS,
+            MEM(
+             BINOP(PLUS,
+              TEMP t113,
+              CONST 4)),
+            CONST 0)),
+          CONST 2323))))))),
+   ESEQ(
+    MOVE(
+     MEM(
+      BINOP(PLUS,
+       MEM(
+        BINOP(PLUS,
+         TEMP t113,
+         CONST 4)),
+       CONST 8)),
+     CONST 2323),
+    CONST 0))))
+
+=============================================================
+===================== Testing test43.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test43.tig:6.2 Error: types mismatch for arithmetic and comparison expression
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  CONST 0))
+
+=============================================================
+===================== Testing test44.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   MOVE(
+    TEMP t104,
+    CONST 0),
+   MOVE(
+    TEMP t104,
+    CONST 0)),
+  CONST 0))
+
+=============================================================
+===================== Testing test45.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test45.tig:5.2 Error: initializing nil expressions not constrained by record type
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test45.tig:5.2 Error: the type of initializaion expression does not match the type of variable a
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  TEMP t104))
+
+=============================================================
+===================== Testing test46.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  ESEQ(
+   EXP(
+    ESEQ(
+     SEQ(
+      MOVE(
+       TEMP t105,
+       CONST 1),
+      SEQ(
+       CJUMP(EQ,
+        TEMP t104,
+        CONST 0,
+        L1,L2),
+       SEQ(
+        LABEL L2,
+        SEQ(
+         MOVE(
+          TEMP t105,
+          CONST 0),
+         LABEL L1)))),
+     TEMP t105)),
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t106,
+      CONST 1),
+     SEQ(
+      CJUMP(NE,
+       TEMP t104,
+       CONST 0,
+       L3,L4),
+      SEQ(
+       LABEL L4,
+       SEQ(
+        MOVE(
+         TEMP t106,
+         CONST 0),
+        LABEL L3)))),
+    TEMP t106))))
+
+=============================================================
+===================== Testing test47.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 4),
+  CONST 0))
+
+=============================================================
+===================== Testing test48.tig =====================
+=============================================================
+
+************** For function g: **************
+MOVE(
+ TEMP t102,
+ TEMP t104)
+************** For function g: **************
+MOVE(
+ TEMP t102,
+ TEMP t105)
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+
+=============================================================
+===================== Testing test49.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test49.tig:5.18 Error: syntax error: inserting  PLUS
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test49.tig:5.10 Error: undefined variable : rectype
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test49.tig:5.10 Error: types mismatch for arithmetic and comparison expression
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   CONST 0),
+  TEMP t104))
+
+=============================================================
+===================== Testing test5.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  MOVE(
+   TEMP t104,
+   ESEQ(
+    SEQ(
+     MOVE(
+      TEMP t105,
+      CALL(
+       NAME allocRecord,
+        CONST 8)),
+     SEQ(
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 0)),
+       CONST 0),
+      MOVE(
+       MEM(
+        BINOP(PLUS,
+         TEMP t105,
+         CONST 4)),
+       CONST 0))),
+    TEMP t105)),
+  TEMP t104))
+
+=============================================================
+===================== Testing test6.tig =====================
+=============================================================
+
+************** For function do_nothing1: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME do_nothing2,
+   BINOP(PLUS,
+    TEMP t104,
+    CONST 1)))
+************** For function do_nothing2: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME do_nothing1,
+   TEMP t106,
+   NAME L1))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME do_nothing1,
+   CONST 0,
+   NAME L2))
+
+=============================================================
+===================== Testing test7.tig =====================
+=============================================================
+
+************** For function do_nothing1: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  EXP(
+   CALL(
+    NAME do_nothing2,
+     BINOP(PLUS,
+      TEMP t104,
+      CONST 1))),
+  CONST 0))
+************** For function do_nothing2: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  EXP(
+   CALL(
+    NAME do_nothing1,
+     TEMP t106,
+     NAME L1)),
+  NAME L2))
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CALL(
+  NAME do_nothing1,
+   CONST 0,
+   NAME L3))
+
+=============================================================
+===================== Testing test8.tig =====================
+=============================================================
+
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ ESEQ(
+  SEQ(
+   CJUMP(GT,
+    CONST 10,
+    CONST 20,
+    L1,L2),
+   SEQ(
+    LABEL L1,
+    SEQ(
+     MOVE(
+      TEMP t104,
+      CONST 30),
+     SEQ(
+      JUMP(
+       NAME L3),
+      SEQ(
+       LABEL L2,
+       SEQ(
+        MOVE(
+         TEMP t104,
+         CONST 40),
+        LABEL L3)))))),
+  TEMP t104))
+
+=============================================================
+===================== Testing test9.tig =====================
+=============================================================
+
+/Users/han/Downloads/0320_simple_const_folding/chap7_ir/testcases/test9.tig:3.1 Error: if exp1 then exp2 else exp3 types of exp2 and exp3 do not match
+************** For function tiger_main: **************
+MOVE(
+ TEMP t102,
+ CONST 0)
+val it = [(),(),(),(),(),(),(),(),(),(),(),(),...] : unit list
+val it = () : unit
+- 
