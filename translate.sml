@@ -251,14 +251,15 @@ struct
 			       | NONE => Impossible "Can't break at label NONE" 
 
    fun callExp (defLevel, funcLabel, useLevel, args, isprocedure) = 
-     let val staticLink = followSL(defLevel, useLevel) 
+     let val staticLink = if defLevel = mainLevel then [] 
+                          else [followSL(defLevel, useLevel)] 
          val Exargs = map unEx args
      in
        case isprocedure of
-          true => Nx(Tree.EXP(Tree.CALL(Tree.NAME funcLabel, staticLink::Exargs)))
-	| false =>Ex(Tree.CALL(Tree.NAME funcLabel, staticLink::Exargs)) 
+          true => Nx(Tree.EXP(Tree.CALL(Tree.NAME funcLabel, staticLink@Exargs)))
+	| false =>Ex(Tree.CALL(Tree.NAME funcLabel, staticLink@Exargs)) 
      end
-                             
+                                  
    fun recordExp (fields) = 
      let val r = Temp.newtemp()
          val size = List.length(fields)
