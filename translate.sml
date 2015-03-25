@@ -42,7 +42,8 @@ struct
 
    fun unCx (Ex e) = (fn (t, f) => Tree.CJUMP(Tree.EQ, e, Tree.CONST 1, t, f))
      | unCx (Cx genstm) = genstm
-     | unCx (Nx s) = Impossible "Can't convert Nx to Cx"  
+     | unCx (Nx s) = (Printtree.printtree(TextIO.stdOut, s);
+                      Impossible "Can't convert Nx to Cx")  
   
    fun newLevel ({parent: level, name: Temp.label, formals: bool list}) =
       let
@@ -136,9 +137,7 @@ struct
     let val arrayBase = unEx arrayBase
         val index = unEx index
     in
-      case index of
-        Tree.CONST n => Ex(Tree.MEM(Tree.BINOP(Tree.PLUS, arrayBase, Tree.CONST(MipsFrame.wordSize * n))))
-       | _  => Impossible "Index must be an integer" 
+       Ex(Tree.MEM(Tree.BINOP(Tree.PLUS, arrayBase, Tree.BINOP(Tree.MUL, Tree.CONST(MipsFrame.wordSize), index)))) 
     end
 
   fun fieldVar (recordBase, index) =
@@ -208,20 +207,12 @@ struct
         val done_label = Temp.newlabel()
         val test = unCx test
     in
-      case then' of
-         Ex(e) => Ex(Tree.ESEQ(seq[Tree.MOVE(Tree.TEMP r, unEx(then')), 
+        Ex(Tree.ESEQ(seq[Tree.MOVE(Tree.TEMP r, unEx(then')), 
                                    test(t, f),
                                    Tree.LABEL f,
                                    Tree.MOVE(Tree.TEMP r, unEx(else')),
                                    Tree.LABEL t],
                        Tree.TEMP r))
-       |  _  => Nx(seq[test(t, f),
-                     Tree.LABEL t,
-                     unNx(then'),
-                     Tree.JUMP(Tree.NAME(done_label), [done_label]),
-                     Tree.LABEL f,
-                     unNx(else'),
-                     Tree.LABEL done_label])
     end
 
   fun whileExp (test, body, SOME(done_label)) =

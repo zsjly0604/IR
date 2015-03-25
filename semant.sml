@@ -236,7 +236,7 @@ structure Semant :> SEMANT = struct
 	      val {venv = venv', tenv = tenv', explist = explist'} = foldl transOne {venv=venv, tenv=tenv, explist=[]} decs
 	      val {exp = bodyexp, ty= bodyty} = transExp(venv',tenv', level, loop_done_label) body
           in   
-	       {exp = Translate.seqExp(explist', bodyexp), ty = bodyty}
+	       {exp = Translate.seqExp(List.rev(explist'), bodyexp), ty = bodyty}
           end
 	| trexp (A.ArrayExp{typ, size, init, pos})  =
             let val {exp = expsize, ty = tysize} = trexp size
