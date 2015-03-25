@@ -6,6 +6,7 @@ struct
   
   val baseDepth : depth = 0
   val baseEscEnv : escEnv = Symbol.empty
+  val Impossible = ErrorMsg.impossible
 
   structure A = Absyn 
   val err = ErrorMsg.error
@@ -13,7 +14,7 @@ struct
   fun traverseVar(env:escEnv, d:depth, s:Absyn.var) : unit = 
     case s of
       A.SimpleVar(id, pos) => (case Symbol.look(env, id) of
-                               SOME(d', esc) => if d' > d then esc := true
+                               SOME(d', esc) => if d' < d then esc := true
                                                 else ()
 			     | NONE => ())
      | A.FieldVar(var, id, pos) => traverseVar(env, d, var)
@@ -71,6 +72,7 @@ struct
                                              traverseExp(env, d, init);
                                              Symbol.enter(env, name, (d, escape)))
       | A.TypeDec(_) => env
+      | _ => Impossible "Invalid decalaration type" 
     in
        foldl parse_dec env s 
     end

@@ -176,10 +176,11 @@ structure Semant :> SEMANT = struct
                 val trexpList = map trexp expList
                 val expexpList = map #exp trexpList
                 val tyexpList = map #ty trexpList
+                val length = List.length(expexpList) 
             in  
-               case List.length(trexpList) of
+               case length of
                   0 => {exp = Translate.nilExp(), ty = Types.UNIT}
-		| _  => {exp = Translate.seqExp(expexpList),  ty = List.last(tyexpList)}
+		| _  => {exp = Translate.seqExp(List.take(expexpList, length - 1), List.last(expexpList)),  ty = List.last(tyexpList)}
             end
 	| trexp (A.AssignExp{var, exp, pos})  =
             let val {exp = expspec, ty = tyspec} = transVar(venv, tenv, level, loop_done_label) var
@@ -221,7 +222,7 @@ structure Semant :> SEMANT = struct
                 val done_label = SOME(Translate.newDoneLabel())
                 val {exp = expbody, ty = tybody} = transExp(new_venv, tenv, level, done_label) body
             in
-              if (checkInt(tylo, pos, "For loop low bound") andalso checkInt(tyhi, pos, "For loop high bound") andalso checkUnit(tybody, pos, "For loop body")) then {exp = Translate.forExp(Translate.simpleVar(access, level), exphi, explo, expbody, done_label), ty = Types.UNIT}
+              if (checkInt(tylo, pos, "For loop low bound") andalso checkInt(tyhi, pos, "For loop high bound") andalso checkUnit(tybody, pos, "For loop body")) then {exp = Translate.forExp(Translate.simpleVar(access, level), explo, exphi, expbody, done_label), ty = Types.UNIT}
               else {exp = Translate.nilExp(), ty = Types.UNIT}
             end
 	| trexp (A.BreakExp pos) = 
@@ -235,7 +236,7 @@ structure Semant :> SEMANT = struct
 	      val {venv = venv', tenv = tenv', explist = explist'} = foldl transOne {venv=venv, tenv=tenv, explist=[]} decs
 	      val {exp = bodyexp, ty= bodyty} = transExp(venv',tenv', level, loop_done_label) body
           in   
-	       {exp = Translate.adhere(explist',bodyexp), ty = bodyty}
+	       {exp = Translate.seqExp(explist', bodyexp), ty = bodyty}
           end
 	| trexp (A.ArrayExp{typ, size, init, pos})  =
             let val {exp = expsize, ty = tysize} = trexp size
@@ -299,7 +300,7 @@ structure Semant :> SEMANT = struct
 	  val access = Translate.allocLocal level (!escape)
 	  val explist' = Translate.assignExp(Translate.simpleVar(access, level), exp)::explist
       in 
-          if tyinit <> Types.NIL then (print "in NONE"; {tenv = tenv, venv = Symbol.enter(venv,name,Env.VarEntry{access=access, ty = tyinit}), explist = explist'})
+          if tyinit <> Types.NIL then {tenv = tenv, venv = Symbol.enter(venv,name,Env.VarEntry{access=access, ty = tyinit}), explist = explist'}
           else (err pos ("Non-record variable can't be initializing nil expression: " ^ Symbol.name name);{tenv = tenv, venv = venv, explist = explist})
       end
     | transDec (venv,tenv,A.VarDec{name,typ=SOME(s,pos),init, pos=pos1, escape=escape},endLable,level,explist) =
@@ -354,7 +355,7 @@ structure Semant :> SEMANT = struct
 	   else
 	       {tenv = foldr finalize tenv'' (ListPair.zip(ListPair.zip(names,types),positions)), venv = venv, explist=explist})
       end
-    | transDec (venv, tenv, (Absyn.FunctionDec funcs),endlabel,level,explist) =
+    | transDec (venv, tenv, (A.FunctionDec funcs),endlabel,level,explist) =
       let fun firstpass ({name=name, params=params, body=body, pos=pos, result=result},tempvenv) =
 	      let val result_ty = case result of
                                       SOME(rt, position) => lookType(tenv, rt, pos)

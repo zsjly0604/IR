@@ -34,7 +34,7 @@ sig
     val subscriptVar : exp * exp -> exp
     val fieldVar : exp * int -> exp
     val assignExp : exp * exp -> exp
-    val seqExp : exp list -> exp
+    val seqExp : exp list * exp -> exp
     val binop : Absyn.oper * exp * exp -> exp
     val relop : Absyn.oper * exp * exp -> exp
     val ifthenExp : exp * exp -> exp
@@ -46,5 +46,4 @@ sig
     val recordExp : exp list -> exp
     val arrayExp : exp * exp -> exp
     val procEntryExit : {level:level, body:exp} -> unit
-    val adhere: (exp list * exp) -> exp
 end

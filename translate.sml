@@ -29,7 +29,9 @@ struct
                                       Tree.LABEL t],
                                       Tree.TEMP r)
                          end
-     | unEx (Nx s) = Tree.ESEQ(s, Tree.CONST 0)
+     | unEx (Nx s) = case s of 
+                        Tree.EXP(exp) => exp 
+		      | _  => Tree.ESEQ(s, Tree.CONST 0)
 
    fun unNx (Ex e) = Tree.EXP e
      | unNx (Cx genstm) = let val t = Temp.newlabel() and f = Temp.newlabel()
@@ -66,17 +68,11 @@ struct
   fun procEntryExit ({level= nestLevel ({frame=frame, parent=parent}, unique), body = body}) = 
     let
       val body' = MipsFrame.procEntryExit1(frame, unNx body)
-       
       val moveStm = Tree.MOVE(Tree.TEMP MipsFrame.RV, unEx body)
     in
       frags := (MipsFrame.PROC {body = moveStm, frame = frame})::(!frags)
     end
-    | procEntryExit({level= outermost, body=body}) = (Impossible "Error: no function should be at the ROOT level!")
-
-   fun adhere (front, body) = 
-     case front of
-        [] => Ex(unEx body)
-      | _  => Ex (Tree.ESEQ(seq(map unNx front), unEx body))
+    | procEntryExit({level= outermost, body=body}) = (Impossible "Error: no function should be at the ROOT level!")       
 
    fun formals (nestLevel({parent=parent, frame=frame}, unique)) =
        let
@@ -158,19 +154,14 @@ struct
       Nx(Tree.MOVE(left, right))
     end
 
-  fun seqExp (expList) =
-    let val len = List.length(expList)
-        val expLast = List.last(expList)
-        val NxList = seq(map unNx (List.take(expList, len - 1)))
-    in
-        case len of
-          1 => (case expLast of
+  fun seqExp (expFront, expLast) =
+      case expFront of
+          [] => (case expLast of
                   Nx(s) => expLast
 		| _ => Ex(unEx expLast))
-	 |_  => (case expLast of
-                  Nx(s) => Nx(Tree.SEQ(NxList, s))
-		| _ => Ex(Tree.ESEQ(NxList, unEx expLast)))
-    end
+	 | _  => (case expLast of
+                  Nx(s) => Nx(Tree.SEQ(seq(map unNx expFront), s))
+		| _ => Ex(Tree.ESEQ(seq(map unNx expFront), unEx expLast)))
 
   fun binop (oper, left, right) =
      let val troper = case oper of
@@ -248,7 +239,7 @@ struct
     | whileExp (test, body, NONE) = Impossible "While loop done_label can't be NONE" 
   
   fun forExp (var, lo, hi, body, SOME(done_label)) =
-    let val body_label = Temp.newlabel() and branch_label = Temp.newlabel()
+    let val body_label = Temp.newlabel()
         val var = unEx var
         val lo = unEx lo
         val hi = unEx hi
@@ -257,10 +248,8 @@ struct
              Tree.CJUMP(Tree.LE, var, hi, body_label, done_label),
              Tree.LABEL body_label,
              unNx body,
-             Tree.CJUMP(Tree.GE, var, lo, branch_label, done_label),
-             Tree.LABEL branch_label,
-             Tree.MOVE(var, Tree.BINOP(Tree.PLUS, var, Tree.CONST 1)),
              Tree.CJUMP(Tree.LT, var, hi, body_label, done_label),
+             Tree.MOVE(var, Tree.BINOP(Tree.PLUS, var, Tree.CONST 1)),
              Tree.LABEL done_label
              ])
     end
